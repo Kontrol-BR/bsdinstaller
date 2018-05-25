@@ -4,7 +4,7 @@
 
 product = {
 	-- no spaces here, used for disk label
-	name = "Kontrol",
+	name = "OPNSense",
 	version = "18.7"
 }
 
