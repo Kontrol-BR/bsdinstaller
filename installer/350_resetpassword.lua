@@ -89,15 +89,19 @@ return {
 		password = TargetSystemUI.set_root_password(nil)
 
 		if password ~= "" then
-			cmds:add("${root}${MOUNT_DEVFS} /tmp/hdrescue/dev")
-			cmds:add("${root}${CHROOT} /tmp/hdrescue " ..
-				      "/bin/sh /etc/rc.d/ldconfig start")
-			cmds:add({
-			    cmdline = "${root}${CHROOT} /tmp/hdrescue " ..
-				      "/usr/local/etc/rc.initial.password root -x 0",
-			    input = password .. "\n",
-			    sensitive = password
-			})
+			if POSIX.stat("/tmp/hdrescue/usr/local/opnsense/scripts/shell/password.php", "type") == "regular" then
+				cmds:add("${root}${MOUNT_DEVFS} /tmp/hdrescue/dev")
+				cmds:add("${root}${CHROOT} /tmp/hdrescue " ..
+					      "/bin/sh /etc/rc.d/ldconfig start")
+				cmds:add({
+				    cmdline = "${root}${CHROOT} /tmp/hdrescue " ..
+					      "/usr/local/opnsense/scripts/shell/password.php root -x 0",
+				    input = password .. "\n",
+				    sensitive = password
+				})
+			else
+				message = _("The installed version does not support recovery.")
+			end
 			cmds:add("${root}${UMOUNT} /tmp/hdrescue/dev")
 		else
 			message = _("The previous password was kept.")
